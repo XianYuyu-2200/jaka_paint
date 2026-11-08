@@ -9,6 +9,7 @@ from tkinter.scrolledtext import ScrolledText
 
 from PIL import Image, ImageTk
 
+from core.development_prompt import extract_prompt
 from core.lineart_to_points import convert_to_jaka
 from core.jaka_txt_to_pointmap import render
 
@@ -93,7 +94,12 @@ class JakaPaintApp(tk.Tk):
         prompt_window.rowconfigure(0, weight=1)
         text = ScrolledText(prompt_window, wrap="word", padx=12, pady=12)
         text.grid(row=0, column=0, sticky="nsew", padx=12, pady=(12, 8))
-        content = PROMPT_PATH.read_text(encoding="utf-8")
+        try:
+            content = extract_prompt(PROMPT_PATH.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            prompt_window.destroy()
+            messagebox.showerror("提示词格式错误", str(exc))
+            return
         text.insert("1.0", content)
         text.configure(state="disabled")
 
