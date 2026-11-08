@@ -5,6 +5,7 @@ import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
+from tkinter.scrolledtext import ScrolledText
 
 from PIL import Image, ImageTk
 
@@ -15,6 +16,7 @@ from core.jaka_txt_to_pointmap import render
 ROOT = Path(__file__).resolve().parent
 SAMPLE_IMAGE = ROOT / "samples" / "lineart_sample.png"
 OUTPUT_DIR = ROOT / "output"
+PROMPT_PATH = ROOT / "AI_DEVELOPMENT_PROMPT.md"
 
 # Default drawing parameters used by the current workflow.
 DEFAULTS = {
@@ -61,7 +63,10 @@ class JakaPaintApp(tk.Tk):
         workflow.pack(fill="x")
         ttk.Label(workflow, text=f"当前线稿：{SAMPLE_IMAGE.relative_to(ROOT)}").pack(anchor="w")
         ttk.Label(workflow, text="转换参数：默认配置").pack(anchor="w", pady=(5, 0))
-        ttk.Button(workflow, text="生成 TXT 点位", command=self.generate).pack(anchor="w", pady=(14, 0))
+        actions = ttk.Frame(workflow)
+        actions.pack(anchor="w", pady=(14, 0))
+        ttk.Button(actions, text="生成 TXT 点位", command=self.generate).pack(side="left")
+        ttk.Button(actions, text="开发助手", command=self.show_development_prompt).pack(side="left", padx=(10, 0))
 
         preview_frame = ttk.LabelFrame(root, text="线稿预览", padding=10)
         preview_frame.pack(fill="both", expand=True, pady=(18, 0))
@@ -73,6 +78,38 @@ class JakaPaintApp(tk.Tk):
         todo = ttk.LabelFrame(root, text="功能状态", padding=10)
         todo.pack(fill="x", pady=(14, 0))
         ttk.Label(todo, text="当前支持：线稿转 TXT 点位    后续支持：图片输入、参数设置、控制器连接与绘图发送").pack(anchor="w")
+
+    def show_development_prompt(self) -> None:
+        """Display the bundled prompt and provide a one-click clipboard copy."""
+        if not PROMPT_PATH.is_file():
+            messagebox.showerror("文件缺失", f"找不到开发助手提示词：\n{PROMPT_PATH}")
+            return
+        prompt_window = tk.Toplevel(self)
+        prompt_window.title("开发助手提示词")
+        prompt_window.geometry("820x620")
+        prompt_window.minsize(620, 420)
+        prompt_window.transient(self)
+        prompt_window.columnconfigure(0, weight=1)
+        prompt_window.rowconfigure(0, weight=1)
+        text = ScrolledText(prompt_window, wrap="word", padx=12, pady=12)
+        text.grid(row=0, column=0, sticky="nsew", padx=12, pady=(12, 8))
+        content = PROMPT_PATH.read_text(encoding="utf-8")
+        text.insert("1.0", content)
+        text.configure(state="disabled")
+
+        actions = ttk.Frame(prompt_window, padding=(12, 0, 12, 12))
+        actions.grid(row=1, column=0, sticky="ew")
+
+        def copy_prompt() -> None:
+            self.clipboard_clear()
+            self.clipboard_append(content)
+            self.update()
+            self.status.configure(text="开发助手提示词已复制到剪贴板")
+
+        ttk.Button(actions, text="复制提示词", command=copy_prompt).pack(side="left")
+        ttk.Label(actions, text="复制后粘贴到 Vibe Coding 工具，并在末尾追加当前任务。", foreground="#555555").pack(
+            side="left", padx=(12, 0)
+        )
 
     def generate(self) -> None:
         if not SAMPLE_IMAGE.is_file():

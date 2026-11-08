@@ -24,6 +24,10 @@ python jaka_paint_app.py
 - `preview/trajectory.png`：连线轨迹；
 - `preview/diagnostic.png`：诊断预览。
 
+## 开发助手提示词
+
+仓库内的 `AI_DEVELOPMENT_PROMPT.md` 是配套的开发助手提示词。学员可以在软件中点击“开发助手”查看并复制，也可以直接打开该文件，将全文粘贴到 Vibe Coding 工具中，再在末尾追加一个当前任务。提示词要求 AI 分阶段修改、保留线稿转 TXT 核心，并在控制器功能阶段先使用模拟环境。
+
 命令行核心转换也可以直接调用：
 
 ```powershell
