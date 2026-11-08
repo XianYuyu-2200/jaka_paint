@@ -1,9 +1,4 @@
-"""Teaching starter: fixed line-art input to JAKA TXT point script.
-
-This intentionally small application is the starting point for the Vibe Coding
-training. The conversion algorithm is supplied; the surrounding workflow is
-left as TODO work for learners.
-"""
+"""JAKA line-art to TXT point-script application."""
 from __future__ import annotations
 
 import sys
@@ -21,7 +16,7 @@ ROOT = Path(__file__).resolve().parent
 SAMPLE_IMAGE = ROOT / "samples" / "lineart_sample.png"
 OUTPUT_DIR = ROOT / "output"
 
-# Fixed teaching defaults. Learners will expose these in a parameter panel.
+# Default drawing parameters used by the current workflow.
 DEFAULTS = {
     "width_mm": 152.4,
     "height_mm": 152.4,
@@ -44,10 +39,10 @@ DEFAULTS = {
 }
 
 
-class HalfFinishedApp(tk.Tk):
+class JakaPaintApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("JAKA 线稿转 TXT 点位 · 教学半成品")
+        self.title("JAKA 线稿绘图工作台")
         self.geometry("900x650")
         self.minsize(760, 560)
         self.preview: ImageTk.PhotoImage | None = None
@@ -59,13 +54,13 @@ class HalfFinishedApp(tk.Tk):
         ttk.Label(root, text="JAKA 线稿转 TXT 点位", font=("Microsoft YaHei UI", 22, "bold")).pack(anchor="w")
         ttk.Label(
             root,
-            text="当前版本只保留核心转换：固定线稿样例 → JAKA ZU Script TXT。",
+            text="线稿转换为 JAKA ZU Script TXT 点位程序。",
         ).pack(anchor="w", pady=(4, 18))
 
         workflow = ttk.LabelFrame(root, text="当前可用流程", padding=14)
         workflow.pack(fill="x")
-        ttk.Label(workflow, text=f"输入样例：{SAMPLE_IMAGE.relative_to(ROOT)}").pack(anchor="w")
-        ttk.Label(workflow, text="转换参数：内置教学默认值（暂未开放设置面板）").pack(anchor="w", pady=(5, 0))
+        ttk.Label(workflow, text=f"当前线稿：{SAMPLE_IMAGE.relative_to(ROOT)}").pack(anchor="w")
+        ttk.Label(workflow, text="转换参数：默认配置").pack(anchor="w", pady=(5, 0))
         ttk.Button(workflow, text="生成 TXT 点位", command=self.generate).pack(anchor="w", pady=(14, 0))
 
         preview_frame = ttk.LabelFrame(root, text="线稿预览", padding=10)
@@ -75,9 +70,9 @@ class HalfFinishedApp(tk.Tk):
         self.status = ttk.Label(root, text="等待生成", foreground="#555555")
         self.status.pack(anchor="w", pady=(12, 0))
 
-        todo = ttk.LabelFrame(root, text="Vibe Coding 待完成模块", padding=10)
+        todo = ttk.LabelFrame(root, text="功能状态", padding=10)
         todo.pack(fill="x", pady=(14, 0))
-        ttk.Label(todo, text="1. 图片选择与预览    2. 参数设置    3. JAKA IP 连接、发送与启动绘图").pack(anchor="w")
+        ttk.Label(todo, text="当前支持：线稿转 TXT 点位    后续支持：图片输入、参数设置、控制器连接与绘图发送").pack(anchor="w")
 
     def generate(self) -> None:
         if not SAMPLE_IMAGE.is_file():
@@ -106,7 +101,7 @@ class HalfFinishedApp(tk.Tk):
 
 
 def main() -> None:
-    HalfFinishedApp().mainloop()
+    JakaPaintApp().mainloop()
 
 
 if __name__ == "__main__":
